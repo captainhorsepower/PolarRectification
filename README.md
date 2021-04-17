@@ -31,4 +31,7 @@ Example images:
 
 ![test-images/2011_09_26_drive_0005_sync-83-84/2011_09_26_drive_0005_sync-83-84-polar.gif](test-images/2011_09_26_drive_0005_sync-83-84/2011_09_26_drive_0005_sync-83-84-polar.gif)
 
+## Submodule branch
 
+this helped me to finally update submodule branch
+https://github.community/t/cant-check-out-a-different-branch-on-a-submodule/128453/5
