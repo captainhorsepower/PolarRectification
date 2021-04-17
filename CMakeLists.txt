@@ -4,7 +4,7 @@ project(PolarRectification CXX)
 set(APP_VERSION "0.0.0")
 
 if( NOT CMAKE_CXX_STANDARD )
-	set (CMAKE_CXX_STANDARD 14)
+	set (CMAKE_CXX_STANDARD 17)
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -15,16 +15,11 @@ set(CMAKE_POSITION_INDEPENDENT_CODE OFF)
 set(CMAKE_LINK_WHAT_YOU_USE OFF)
 
 
-find_package(OpenCV REQUIRED)
-
-
-find_package(TBB)
-if ( ${TBB_FOUND} ) 	
-	add_definitions(-DHAVE_TBB=1 -DTBB_SUPPRESS_DEPRECATED_MESSAGES=1)
-	set(TBB_LIBRARIES "tbb") # fixme: I am not usre if this will work always
+if(NOT OpenCV_DIR)
+	set(OpenCV_DIR ${HOME}/.virtualenvs/3D-reconstruction)
 endif()
 
-
+find_package(OpenCV REQUIRED)
 
 set(SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
