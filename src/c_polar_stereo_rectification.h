@@ -27,7 +27,7 @@
  *    http://www.inf.ethz.ch/personal/pomarc/pubs/PollefeysICCV99.pdf
  *
  */
-class c_polar_stereo_rectification
+class CV_EXPORTS_W c_polar_stereo_rectification
 {
 public: // public interface
 
@@ -38,7 +38,7 @@ public: // public interface
   /**
    * @brief Compute the forward and inverse mappings based on provided fundamental matrix
    * */
-  bool compute(const cv::Matx33d & input_fundamental_matrix,
+  CV_EXPORTS bool compute(const cv::Matx33d & input_fundamental_matrix,
       const cv::Size & image_size);
 
   /**
@@ -56,14 +56,14 @@ public: // public interface
    *  Use this map as argument for cv::remap() for forward (rectification) mapping.
    *  See this_class::remap() for example of usage.
    * */
-  const cv::Mat2f & forward_map(int index) const;
+  CV_EXPORTS const cv::Mat2f & forward_map(int index) const;
 
   /**
    * @brief Read-Only access to computed reverse mapping computed for each image index [0..1]
    *  Use this map as argument for cv::remap() for reverse mapping.
    *  See this_class::unmap() for example of usage.
    * */
-  const cv::Mat2f & reverse_map(int index) const;
+  CV_EXPORTS_W const cv::Mat2f & reverse_map(int index) const;
 
 
   /**
