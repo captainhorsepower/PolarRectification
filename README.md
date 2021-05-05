@@ -1,5 +1,12 @@
 # PolarRectification
 
+Need to create proper python bindings!
+
+WIP: following this tutorial https://learnopencv.com/how-to-convert-your-opencv-c-code-into-a-python-module/
+
+---
+
+
 Stereo images polar rectification for general motion.
 
 
