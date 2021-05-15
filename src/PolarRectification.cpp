@@ -1,5 +1,5 @@
 /*
- * c_polar_stereo_rectification.cc
+ * PolarRectification.cc
  *
  *  Created on: Dec 20, 2020
  *      Author: amyznikov
@@ -12,8 +12,7 @@
  *    http://www.inf.ethz.ch/personal/pomarc/pubs/PollefeysICCV99.pdf
  */
 
-#include "c_polar_stereo_rectification.h"
-
+#include "opencv2/PolarRectification.hpp"
 
 #ifndef CF_DEBUG
   #define CF_DEBUG(...) \
@@ -26,6 +25,7 @@
 #define CF_ERROR  CF_DEBUG
 #endif
 
+using namespace cv::polarrect;
 
 template<class T>
 static inline bool SIGN(T val)
@@ -64,7 +64,7 @@ static inline cv::Vec<T, 3> GET_LINE_FROM_POINTS(const cv::Point_<T> & point1, c
   return cv::Vec<T, 3>(point1.y - point2.y, point2.x - point1.x, point1.x * point2.y - point2.x * point1.y);
 }
 
-bool c_polar_stereo_rectification::compute_epipoles(const cv::Matx33d & F,
+bool PolarRectification::compute_epipoles(const cv::Matx33d & F,
     cv::Point2d * output_epipole0, cv::Point2d * output_epipole1)
 {
 
@@ -122,7 +122,7 @@ bool c_polar_stereo_rectification::compute_epipoles(const cv::Matx33d & F,
 #endif
 }
 
-void c_polar_stereo_rectification::get_external_points(const cv::Point2d & epipole,
+void PolarRectification::get_external_points(const cv::Point2d & epipole,
     const cv::Size & image_size,
     std::vector<cv::Point2d> & output_external_points)
 {
@@ -184,7 +184,7 @@ void c_polar_stereo_rectification::get_external_points(const cv::Point2d & epipo
 
 }
 
-void c_polar_stereo_rectification::estimate_rho_range(const cv::Point2d & epipole,
+void PolarRectification::estimate_rho_range(const cv::Point2d & epipole,
     const cv::Size & image_size,
     const std::vector<cv::Point2d> & external_points,
     double * output_min_rho, double * output_max_rho)
@@ -292,7 +292,7 @@ void c_polar_stereo_rectification::estimate_rho_range(const cv::Point2d & epipol
   }
 }
 
-void c_polar_stereo_rectification::compute_epilines(const std::vector<cv::Point2d> & points, int whichImage,
+void PolarRectification::compute_epilines(const std::vector<cv::Point2d> & points, int whichImage,
     const cv::Matx33d & F, const std::vector<cv::Vec3d> & oldlines,
     std::vector<cv::Vec3d> & newLines)
 {
@@ -306,7 +306,7 @@ void c_polar_stereo_rectification::compute_epilines(const std::vector<cv::Point2
   }
 }
 
-bool c_polar_stereo_rectification::line_intersects_segment(const cv::Vec3d & line,
+bool PolarRectification::line_intersects_segment(const cv::Vec3d & line,
     const cv::Point2d & p1, const cv::Point2d & p2,
     cv::Point2d * intersection)
 {
@@ -347,7 +347,7 @@ bool c_polar_stereo_rectification::line_intersects_segment(const cv::Vec3d & lin
   return false;
 }
 
-bool c_polar_stereo_rectification::line_intersects_rect(const cv::Vec3d & line, const cv::Size & image_size,
+bool PolarRectification::line_intersects_rect(const cv::Vec3d & line, const cv::Size & image_size,
     cv::Point2d * intersection)
 {
   return line_intersects_segment(line, cv::Point2d(0, 0), cv::Point2d(image_size.width - 1, 0), intersection)
@@ -362,7 +362,7 @@ bool c_polar_stereo_rectification::line_intersects_rect(const cv::Vec3d & line, 
           cv::Point2d(0, 0), intersection);
 }
 
-bool c_polar_stereo_rectification::is_the_right_point(const cv::Point2d & epipole,
+bool PolarRectification::is_the_right_point(const cv::Point2d & epipole,
     const cv::Point2d & intersection,
     const cv::Vec3d & line,
     const cv::Point2d * lastPoint)
@@ -400,7 +400,7 @@ bool c_polar_stereo_rectification::is_the_right_point(const cv::Point2d & epipol
   return false;
 }
 
-cv::Point2d c_polar_stereo_rectification::get_border_intersection(const cv::Point2d & epipole, const cv::Vec3d & line,
+cv::Point2d PolarRectification::get_border_intersection(const cv::Point2d & epipole, const cv::Vec3d & line,
     const cv::Size & image_size,
     const cv::Point2d * lastPoint)
 {
@@ -490,7 +490,7 @@ cv::Point2d c_polar_stereo_rectification::get_border_intersection(const cv::Poin
   return intersection;
 }
 
-void c_polar_stereo_rectification::get_border_intersections(const cv::Point2d & epipole, const cv::Vec3d & line,
+void PolarRectification::get_border_intersections(const cv::Point2d & epipole, const cv::Vec3d & line,
     const cv::Size & image_size,
     std::vector<cv::Point2d> & output_intersections)
 {
@@ -515,7 +515,7 @@ void c_polar_stereo_rectification::get_border_intersections(const cv::Point2d & 
   }
 }
 
-cv::Point2d c_polar_stereo_rectification::get_nearest_intersection(const cv::Point2d& oldEpipole,
+cv::Point2d PolarRectification::get_nearest_intersection(const cv::Point2d& oldEpipole,
     const cv::Point2d& newEpipole,
     const cv::Vec3d& line,
     const cv::Point2d& oldPoint,
@@ -545,7 +545,7 @@ cv::Point2d c_polar_stereo_rectification::get_nearest_intersection(const cv::Poi
   return point;
 }
 
-void c_polar_stereo_rectification::estimate_common_region(const cv::Size & image_size)
+void PolarRectification::estimate_common_region(const cv::Size & image_size)
 {
   std::vector<cv::Point2d> external_points[2];
 
@@ -711,7 +711,7 @@ void c_polar_stereo_rectification::estimate_common_region(const cv::Size & image
 }
 
 
-void c_polar_stereo_rectification::get_new_point_and_line_single_image(const cv::Size & image_size, int whichImage,
+void PolarRectification::get_new_point_and_line_single_image(const cv::Size & image_size, int whichImage,
     const cv::Point2d & pOld1, const cv::Point2d & pOld2,
     cv::Point2d * pNew1, cv::Vec3d * newLine1,
     cv::Point2d * pNew2, cv::Vec3d * newLine2)  const
@@ -798,7 +798,7 @@ void c_polar_stereo_rectification::get_new_point_and_line_single_image(const cv:
 
 }
 
-void c_polar_stereo_rectification::get_new_epiline(const cv::Size & image_size,
+void PolarRectification::get_new_epiline(const cv::Size & image_size,
     const cv::Point2d pOld1, const cv::Point2d pOld2,
     cv::Point2d * pNew1, cv::Point2d * pNew2,
     cv::Vec3d * newLine1, cv::Vec3d * newLine2) const
@@ -808,7 +808,7 @@ void c_polar_stereo_rectification::get_new_epiline(const cv::Size & image_size,
 
 
 
-void c_polar_stereo_rectification::compute_transformation_points(const cv::Size & image_size)
+void PolarRectification::compute_transformation_points(const cv::Size & image_size)
 {
   cv::Point2d p1 = m_b[0], p2 = m_b[1];
   cv::Vec3d line1 = m_lineB[0], line2 = m_lineB[1];
@@ -864,7 +864,7 @@ void c_polar_stereo_rectification::compute_transformation_points(const cv::Size 
   theta_points[1].pop_back();
 }
 
-void c_polar_stereo_rectification::compute_remap(const cv::Size & image_size,
+void PolarRectification::compute_remap(const cv::Size & image_size,
     const cv::Point2d & epipole,
     const cv::Point2d & p2,
     int thetaIdx, double minRho, double maxRho,
@@ -898,7 +898,7 @@ void c_polar_stereo_rectification::compute_remap(const cv::Size & image_size,
 
 
 
-void c_polar_stereo_rectification::build_remaps(const cv::Size & image_size)
+void PolarRectification::build_remaps(const cv::Size & image_size)
 {
   const double rhoRange =
       std::max(maxRho[0] - minRho[0], maxRho[1] - minRho[1]) + 1;
@@ -926,7 +926,7 @@ void c_polar_stereo_rectification::build_remaps(const cv::Size & image_size)
 /**
  * @brief Compute the forward and inverse mappings based on provided fundamental matrix
  * */
-bool c_polar_stereo_rectification::compute(const cv::Matx33d & input_fundamental_matrix, const cv::Size & image_size)
+bool PolarRectification::compute(const cv::Matx33d & input_fundamental_matrix, const cv::Size & image_size)
 {
   this->F = input_fundamental_matrix;
 
@@ -955,7 +955,7 @@ bool c_polar_stereo_rectification::compute(const cv::Matx33d & input_fundamental
 /**
  * @brief Example of usage of forwad mapping
  * */
-void c_polar_stereo_rectification::remap(cv::InputArray src1, cv::OutputArray dst1,
+void PolarRectification::remap(cv::InputArray src1, cv::OutputArray dst1,
     cv::InputArray src2, cv::OutputArray dst2,
     int interpolation,
     int border_mode,
@@ -988,7 +988,7 @@ void c_polar_stereo_rectification::remap(cv::InputArray src1, cv::OutputArray ds
 /**
  * @brief Example of usage of reverse mapping
  * */
-void c_polar_stereo_rectification::unmap(cv::InputArray src1, cv::OutputArray dst1,
+void PolarRectification::unmap(cv::InputArray src1, cv::OutputArray dst1,
     cv::InputArray src2, cv::OutputArray dst2,
     int interpolation,
     int border_mode,
@@ -1019,7 +1019,7 @@ void c_polar_stereo_rectification::unmap(cv::InputArray src1, cv::OutputArray ds
 /**
  * @brief  Read-Only access to stored copy of input fundamental matrix
  * */
-const cv::Matx33d & c_polar_stereo_rectification::fundamental_matrix() const
+const cv::Matx33d & PolarRectification::fundamental_matrix() const
 {
   return this->F;
 }
@@ -1027,7 +1027,7 @@ const cv::Matx33d & c_polar_stereo_rectification::fundamental_matrix() const
 /**
  * @brief Read-Only access to epipoles computed for each image index [0..1]
  * */
-const cv::Point2d & c_polar_stereo_rectification::epipole(int index) const
+const cv::Point2d & PolarRectification::epipole(int index) const
 {
   return this->epipoles[index];
 }
@@ -1035,9 +1035,9 @@ const cv::Point2d & c_polar_stereo_rectification::epipole(int index) const
 /**
  * @brief Read-Only access to computed forward mapping computed for each image index [0..1]
  *  Use this map as argument for cv::remap() for forward (rectification) mapping.
- *  See this_class::remap() for example of usage.
+ *  See PolarRectification::remap() for example of usage.
  * */
-const cv::Mat2f & c_polar_stereo_rectification::forward_map(int index) const
+const cv::Mat2f & PolarRectification::forward_map(int index) const
 {
   return this->rmaps[index];
 }
@@ -1045,9 +1045,9 @@ const cv::Mat2f & c_polar_stereo_rectification::forward_map(int index) const
 /**
  * @brief Read-Only access to computed reverse mapping computed for each image index [0..1]
  *  Use this map as argument for cv::remap() for reverse mapping.
- *  See this_class::unmap() for example of usage.
+ *  See PolarRectification::unmap() for example of usage.
  * */
-const cv::Mat2f & c_polar_stereo_rectification::reverse_map(int index) const
+const cv::Mat2f & PolarRectification::reverse_map(int index) const
 {
   return this->imaps[index];
 }

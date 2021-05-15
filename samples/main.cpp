@@ -5,7 +5,7 @@
  *      Author: amyznikov
  */
 
-#include "c_polar_stereo_rectification.h"
+#include "PolarRectification.hpp"
 #include <opencv2/core/ocl.hpp>
 #include <opencv2/xfeatures2d.hpp>
 
@@ -312,7 +312,7 @@ static bool estimate_pose(const cv::Mat input_images[2],
    * Compute the direction of key points movement - FROM or TOWARDS the epipoles.
    * The epipoles locations in pixels should coincide (be equal) on both frames if above homography and fundamental matrix was computed correctly.
    */
-  c_polar_stereo_rectification::compute_epipoles(cv::Matx33d(F),
+  PolarRectification::compute_epipoles(cv::Matx33d(F),
       &epipoles[0], &epipoles[1]);
 
   *output_median_radial_flow = median_radial_flow(epipoles[0], epipoles[1],
@@ -337,7 +337,7 @@ static bool estimate_pose(const cv::Mat input_images[2],
 
 
 /**
- * @brief c_polar_stereo_rectification tester
+ * @brief PolarRectification tester
  */
 int main(int argc, char *argv[])
 {
@@ -354,7 +354,7 @@ int main(int argc, char *argv[])
   cv::Mat reverse_transfrormed_images[2];
 
   /* Stereo rectificator */
-  c_polar_stereo_rectification rectification;
+  PolarRectification rectification;
 
 
   /* Camera ID for camera matrix */
