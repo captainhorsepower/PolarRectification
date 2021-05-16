@@ -11,7 +11,7 @@ private:
     c_polar_stereo_rectification delegate;
 public:
     PolarRectification_Impl(const cv::Matx33d& F, const cv::Size& image_size): F(F), image_size(image_size), delegate(c_polar_stereo_rectification()) {};
-    // ~PolarRectification_Impl() {};
+    ~PolarRectification_Impl() {};
 
     void compute() { delegate.compute(F, image_size); }
 
