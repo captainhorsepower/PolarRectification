@@ -1,10 +1,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1.0)
 
-project(PolarRectification CXX)
-set(APP_VERSION "0.0.0")
+project(stereo CXX)
 
 if( NOT CMAKE_CXX_STANDARD )
-	set (CMAKE_CXX_STANDARD 14)
+	set (CMAKE_CXX_STANDARD 17)
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)
